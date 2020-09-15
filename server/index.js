@@ -14,6 +14,7 @@
 
  app.use(cors());
  app.use(router);
+ 
  io.on('connect', (socket) => {
     console.log('new connection');
 
