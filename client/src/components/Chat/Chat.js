@@ -3,7 +3,7 @@ import queryString from 'query-string';
 import io from 'socket.io-client';
 import './Chat.css';
 
-import InforBar from '../InfoBar/InfoBar';
+import InfoBar from '../InfoBar/InfoBar';
 import Input from '../Input/Input';
 import Messages from '../Messages/Messages';
 let socket;
@@ -13,6 +13,7 @@ let socket;
 const Chat = ({ location }) => {
     const [name, setName] = useState('');
     const [room, setRoom] = useState('');
+    const [user, setUsers] = useState('');
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
     const ENDPOINT = 'localhost:5000';
@@ -25,29 +26,34 @@ const Chat = ({ location }) => {
         setName(name);
         setRoom(room);
 
-        socket.emit('Join', { name, room }, () =>{
-
+        socket.emit('Join', { name, room }, (error) =>{
+            if(error)
+                alert(error);
         });
-        
-        return () => {
-            socket.emit('disconnect');
+        // 
+        // return () => {
+        //     socket.emit('disconnect');
 
-            socket.off();
-        }
+        //     socket.off();
+        // }
     }, [ENDPOINT, location.search]);
     
 
     useEffect(() => {
-        socket.on('message', (message) => {
-            setMessages([...messages, message]);
-        })
-    }, [messages]);
+        socket.on('message', message => {
+            setMessages( messages => [ ...messages, message ]);
+        });
+
+        socket.on("roomData", ({ users }) => {
+            setUsers(users);
+        });
+    }, []);
     
     const sendMessage = (event) => {
         event.preventDefault();
 
         if(message){
-            socket.emit('sendMessage', message, () => setMessages(''));
+            socket.emit('sendMessage', message, () => setMessage(''));
         }
     }
 
@@ -56,7 +62,7 @@ const Chat = ({ location }) => {
     return (
         <div className="outerContainer">
             <div className="container"> 
-            <InforBar room={room} />
+            <InfoBar room={room} />
             <Messages messages={messages} />    
             <Input message={message} setMessage={setMessage} sendMessage={sendMessage}/>   
             </div>

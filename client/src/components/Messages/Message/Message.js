@@ -4,7 +4,7 @@ import './Message.css';
 
 import ReactEmoji from 'react-emoji';
 
-const Message = ({ message: { user, text }, name }) => {
+const Message = ({ message: { text, user }, name }) => {
     let isSentByCurrentUser = false;
 
     const trimmedName = name.trim().toLowerCase();
@@ -29,7 +29,7 @@ const Message = ({ message: { user, text }, name }) => {
                 <div className="messageBox backgroundLight">
                     <p className="messageText colorDark">{ReactEmoji.emojify(text)}</p>
                 </div>
-                <p className="sentText pl-10">{name}</p>
+                <p className="sentText pl-10">{user}</p>
             </div>
         )
 
